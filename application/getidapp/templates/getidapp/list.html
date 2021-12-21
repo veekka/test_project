@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>List</title>
+</head>
+<body>
+    <p class="p-3 mb-2 bg-info text-white"> Manufacturers by contract: {{ contract_id }}</p>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+
+    {% if manufacturers %}
+        {% for el in manufacturers %}
+            <div class="alert alert-warning mt-2">
+                <h3>{{ el.id_manufacturer }}</h3>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>We don't have any manufacturer on this id</p>
+    {% endif %}
+</body>
+</html>
