@@ -1,26 +1,25 @@
 from django.shortcuts import render
 from .models import CreditApplication, Contract
+import sqlite3
 
 
 def index(request):
     return render(request, 'getidapp/index.html')
 
+
 def list(request):
     list_manuf = []
-    attributs = []
     contract = request.GET['id']
-    if Contract.objects.filter(id_contract=contract).exists():
-        con = Contract.objects.get(id_contract=contract)
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
 
-        for contract_id in con.get_id.all():
-            aplication = CreditApplication.objects.get(id_application=contract_id)
-            for product in aplication.product_set.all():
-                m = product.manufacturer_set.all()
-                attr = getattr(*m, 'id_manufacturer')
-                if attr not in attributs:
-                    list_manuf.append(*m)
-                    attributs.append(attr)
+    cur.execute(f"SELECT DISTINCT m.id_manufacturer FROM getidapp_manufacturer as m WHERE m.id in "
+                f"(SELECT p.id FROM getidapp_product as p WHERE p.application_id in "
+                f"(SELECT ap.id FROM getidapp_creditapplication as ap WHERE ap.contract_id in "
+                f"(SELECT c.id FROM getidapp_contract as c WHERE c.id={contract})));")
+    results = cur.fetchall()
+
+    for i in range(len(results)):
+        list_manuf.append(results[i][0])
 
     return render(request, 'getidapp/list.html', {'manufacturers': list_manuf, 'contract_id': contract})
-
-
